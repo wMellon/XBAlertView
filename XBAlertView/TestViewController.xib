@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TestViewController">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z3h-Qb-QRL">
+                    <rect key="frame" x="0.0" y="319" width="125" height="30"/>
+                    <state key="normal" title="一个选项"/>
+                    <connections>
+                        <action selector="oneClick:" destination="-1" eventType="touchUpInside" id="1dm-gS-bmf"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xdt-aP-qcJ">
+                    <rect key="frame" x="250" y="319" width="125" height="30"/>
+                    <state key="normal" title="三个选项"/>
+                    <connections>
+                        <action selector="threeClick:" destination="-1" eventType="touchUpInside" id="5xX-ut-2ZS"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="73G-uZ-qcr">
+                    <rect key="frame" x="125" y="319" width="125" height="30"/>
+                    <state key="normal" title="两个选项"/>
+                    <connections>
+                        <action selector="twoClick:" destination="-1" eventType="touchUpInside" id="7Ct-ya-bNe"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Xdt-aP-qcJ" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="1v5-pd-Wfn"/>
+                <constraint firstItem="Z3h-Qb-QRL" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="FIY-Q8-rLU"/>
+                <constraint firstAttribute="trailing" secondItem="Xdt-aP-qcJ" secondAttribute="trailing" id="IOz-vu-H3h"/>
+                <constraint firstItem="Z3h-Qb-QRL" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Iad-Fx-5BM"/>
+                <constraint firstItem="73G-uZ-qcr" firstAttribute="width" secondItem="Z3h-Qb-QRL" secondAttribute="width" id="muV-Wn-90H"/>
+                <constraint firstItem="Xdt-aP-qcJ" firstAttribute="width" secondItem="Z3h-Qb-QRL" secondAttribute="width" id="oAy-Pl-gk3"/>
+                <constraint firstItem="73G-uZ-qcr" firstAttribute="leading" secondItem="Z3h-Qb-QRL" secondAttribute="trailing" id="pb6-LO-IVb"/>
+                <constraint firstItem="73G-uZ-qcr" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="rLH-q2-x0o"/>
+                <constraint firstItem="Xdt-aP-qcJ" firstAttribute="leading" secondItem="73G-uZ-qcr" secondAttribute="trailing" id="wNF-yk-qoW"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+            <point key="canvasLocation" x="184.5" y="367.5"/>
+        </view>
+    </objects>
+</document>
