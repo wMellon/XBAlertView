@@ -12,13 +12,6 @@
 #import "XBAlertBtnCellTwo.h"
 #import "UIView+Convenience.h"
 
-#define SelfWidth 270               //alertView的宽度
-#define TitleMarginTop 20.0f        //title距离上边间隔
-#define ContentHorizontalOffset 20  //content距离左边间隔
-#define ContentMarginTop 15         //content距离上边间隔
-#define BtnMarginTop 20             //按钮距离上边间隔
-#define kButtonHeight 44.0f         //按钮高度
-
 #define ScreenHeight [[UIScreen mainScreen] bounds].size.height//获取屏幕高度，兼容性测试
 #define ScreenWidth [[UIScreen mainScreen] bounds].size.width//获取屏幕宽度，兼容性测试
 //带有RGBA的颜色设置
@@ -26,17 +19,17 @@
 
 
 @interface XBAlertView ()<UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>{
+    NSString *_title;
+    NSString *_content;
 }
 
 @property (nonatomic, strong) UILabel *alertTitleLabel;
 @property (nonatomic, strong) UILabel *alertContentLabel;
-@property (nonatomic, strong) UIButton *leftBtn;
-@property (nonatomic, strong) UIButton *rightBtn;
 @property (nonatomic, strong) UIView *backImageView;
 
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property(nonatomic, strong) NSMutableArray *blockArray;
-@property(nonatomic, strong) NSMutableArray *titleArray;
+@property(nonatomic, strong) NSMutableArray *btnTitleArray;
 
 @end
 
@@ -47,62 +40,60 @@ static NSString * const btnCellTwoID = @"XBAlertBtnCellTwo";
 
 #pragma mark - life cycle
 
--(id)init{
-    self = [super init];
-    if(self){
+- (id)initWithTitle:(NSString *)title
+        contentText:(NSString *)content
+{
+    if (self = [super init]) {
+        _title = title;
+        _content = content;
         _blockArray = [[NSMutableArray alloc] init];
-        _titleArray = [[NSMutableArray alloc] init];
+        _btnTitleArray = [[NSMutableArray alloc] init];
+        [self setupContentView];
+        _alertTitleLabel.text = _title;
+        _alertContentLabel.text = _content;
     }
     return self;
 }
 
-- (id)initWithTitle:(NSString *)title
-        contentText:(NSString *)content
-{
-    if (self = [self init]) {
-        
-        CGFloat titleH = [title sizeWithAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:17.0f]}].height;
-        CGFloat contentLabelWidth = SelfWidth - ContentHorizontalOffset * 2;
-        CGFloat contentH = [self heightWithContent:content byWidth:contentLabelWidth andFontSize:13 andLineSpacing:3];
-        CGFloat selfHeight = TitleMarginTop + titleH + ContentMarginTop + contentH + BtnMarginTop + kButtonHeight;
-        CGFloat selfMarginLeft = (ScreenWidth - SelfWidth) / 2;
-        
-        self.frame = CGRectMake(selfMarginLeft, (ScreenHeight - selfHeight) / 2, SelfWidth, selfHeight);
-        self.clipsToBounds = YES;
-        self.layer.cornerRadius = 10.0;
-        self.backgroundColor = [UIColor whiteColor];
-        
-        //title
-        self.alertTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, TitleMarginTop, self.frame.size.width, titleH)];
-        self.alertTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
-        self.alertTitleLabel.textAlignment = NSTextAlignmentCenter;
-        self.alertTitleLabel.text = title;
-        [self addSubview:self.alertTitleLabel];
-        
-        //content
-        self.alertContentLabel = [[UILabel alloc] initWithFrame:CGRectMake(ContentHorizontalOffset, CGRectGetMaxY(self.alertTitleLabel.frame) + ContentMarginTop, contentLabelWidth, contentH)];
-        self.alertContentLabel.numberOfLines = 0;
-        self.alertContentLabel.textAlignment = NSTextAlignmentCenter;
-        self.alertContentLabel.font = [UIFont systemFontOfSize:13.0f];
-        self.alertContentLabel.text = content;
-        [self addSubview:self.alertContentLabel];
-        
-        //collectionView
-        [self addSubview:self.collectionView];
-        _collectionView.delegate = self;
-        _collectionView.dataSource = self;
-        [_collectionView registerNib:[UINib nibWithNibName:@"XBAlertBtnCell" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:btnCellOneID];
-        [_collectionView registerNib:[UINib nibWithNibName:@"XBAlertBtnCellTwo" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:btnCellTwoID];
-        
-        //X按钮
-        UIButton *xButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [xButton setImage:[UIImage imageNamed:@"btn_close_normal.png"] forState:UIControlStateNormal];
-        [xButton setImage:[UIImage imageNamed:@"btn_close_selected.png"] forState:UIControlStateHighlighted];
-        xButton.frame = CGRectMake(self.frame.size.width - 32, 0, 32, 32);
-        [self addSubview:xButton];
-        [xButton addTarget:self action:@selector(dismissAlert) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return self;
+- (void)setupContentView{
+    //title
+    self.alertTitleLabel = [[UILabel alloc] init];
+    self.alertTitleLabel.font = [UIFont boldSystemFontOfSize:17.0f];
+    self.alertTitleLabel.textAlignment = NSTextAlignmentCenter;
+    self.alertTitleLabel.frame = CGRectMake(TitleHorizontalOffset, TitleMarginTop, SelfWidth - TitleHorizontalOffset * 2, self.alertTitleLabel.font.lineHeight);
+    [self addSubview:self.alertTitleLabel];
+    
+    //content
+    CGFloat contentLabelWidth = SelfWidth - ContentHorizontalOffset * 2;
+    CGFloat contentH = [self heightWithContent:_content byWidth:contentLabelWidth andFontSize:13 andLineSpacing:3];
+    self.alertContentLabel = [[UILabel alloc] initWithFrame:CGRectMake(ContentHorizontalOffset, CGRectGetMaxY(self.alertTitleLabel.frame) + ContentMarginTop, contentLabelWidth, contentH)];
+    self.alertContentLabel.numberOfLines = 0;
+    self.alertContentLabel.textAlignment = NSTextAlignmentCenter;
+    self.alertContentLabel.font = [UIFont systemFontOfSize:13.0f];
+    [self addSubview:self.alertContentLabel];
+    
+    //self
+    CGFloat selfHeight = TitleMarginTop + self.alertTitleLabel.font.lineHeight + ContentMarginTop + contentH + BtnMarginTop + kButtonHeight;
+    CGFloat selfMarginLeft = (ScreenWidth - SelfWidth) / 2;
+    self.frame = CGRectMake(selfMarginLeft, (ScreenHeight - selfHeight) / 2, SelfWidth, selfHeight);
+    self.clipsToBounds = YES;
+    self.layer.cornerRadius = 10.0;
+    self.backgroundColor = [UIColor whiteColor];
+    
+    //collectionView
+    [self addSubview:self.collectionView];
+    _collectionView.delegate = self;
+    _collectionView.dataSource = self;
+    [_collectionView registerNib:[UINib nibWithNibName:@"XBAlertBtnCell" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:btnCellOneID];
+    [_collectionView registerNib:[UINib nibWithNibName:@"XBAlertBtnCellTwo" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:btnCellTwoID];
+    
+    //X按钮
+    UIButton *xButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [xButton setImage:[UIImage imageNamed:@"btn_close_normal.png"] forState:UIControlStateNormal];
+    [xButton setImage:[UIImage imageNamed:@"btn_close_selected.png"] forState:UIControlStateHighlighted];
+    xButton.frame = CGRectMake(self.frame.size.width - 32, 0, 32, 32);
+    [self addSubview:xButton];
+    [xButton addTarget:self action:@selector(dismissAlert) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
@@ -135,17 +126,17 @@ static NSString * const btnCellTwoID = @"XBAlertBtnCellTwo";
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.titleArray.count;
+    return self.btnTitleArray.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    if(indexPath.row == 0 && self.titleArray.count == 2){
+    if(indexPath.row == 0 && self.btnTitleArray.count == 2){
         XBAlertBtnCellTwo *cell = [collectionView dequeueReusableCellWithReuseIdentifier:btnCellTwoID forIndexPath:indexPath];
-        cell.btnTitle.text = self.titleArray[indexPath.row];
+        cell.btnTitle.text = self.btnTitleArray[indexPath.row];
         return cell;
     }else{
         XBAlertBtnCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:btnCellOneID forIndexPath:indexPath];
-        cell.btnTitle.text = self.titleArray[indexPath.row];
+        cell.btnTitle.text = self.btnTitleArray[indexPath.row];
         return cell;
     }
 }
@@ -155,7 +146,7 @@ static NSString * const btnCellTwoID = @"XBAlertBtnCellTwo";
 #pragma mark -设置每个item的size
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    if(self.titleArray.count == 2){
+    if(self.btnTitleArray.count == 2){
         return CGSizeMake(SelfWidth / 2, kButtonHeight);
     }else{
         return CGSizeMake(SelfWidth, kButtonHeight);
@@ -231,7 +222,7 @@ static NSString * const btnCellTwoID = @"XBAlertBtnCellTwo";
 
 - (void)show
 {
-    if(self.titleArray.count == 0 || self.titleArray.count > 2){
+    if(self.btnTitleArray.count == 0 || self.btnTitleArray.count > 2){
         //更新view的frame
         [self updateFrame];
     }
@@ -241,7 +232,7 @@ static NSString * const btnCellTwoID = @"XBAlertBtnCellTwo";
 }
 
 -(void)updateFrame{
-    NSInteger count = self.titleArray.count;
+    NSInteger count = self.btnTitleArray.count;
     if(count == 0){
         [self.collectionView removeFromSuperview];
         self.frameHeight -= kButtonHeight;
@@ -250,13 +241,17 @@ static NSString * const btnCellTwoID = @"XBAlertBtnCellTwo";
         self.collectionView.frameHeight = count * kButtonHeight;
         self.frameHeight += (count - 1) *kButtonHeight;
     }
+    if(self.frameHeight > ScreenHeight - 64 * 2){
+        //不让alerView覆盖到导航栏和状态栏
+        self.frameHeight = ScreenHeight - 64 * 2;
+    }
     self.frameY = (ScreenHeight - self.frameHeight) / 2;
 }
 
 -(void)addAction:(dispatch_block_t)actionBlock withTitle:(NSString*)title{
     if(actionBlock && ![self isBlankString:title]){
         [self.blockArray addObject:actionBlock];
-        [self.titleArray addObject:title];
+        [self.btnTitleArray addObject:title];
     }
 }
 
